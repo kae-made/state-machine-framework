@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kae.Utility.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,13 +12,17 @@ namespace Kae.StateMachine
 
         protected ITransition stateTransition;
 
+        protected Logger logger;
+
         public abstract Task ReceivedEvent(EventData supplementalData);
         public abstract Task Delete();
 
-        public StateMachine(int initialState)
+        public StateMachine(int initialState, Logger logger = null)
         {
             this.currentState = initialState;
             currentStateMachineState = StateMachineState.Confirmed;
+
+            this.logger = logger;
         }
 
         public enum StateMachineState

@@ -21,6 +21,7 @@ namespace Kae.StateMachine
 
         private void StateMachineExecution(object obj)
         {
+            if (logger != null) logger.LogInfo("start state machine execution...");
             while (true)
             {
                 lock (receivedEvents)
@@ -48,11 +49,13 @@ namespace Kae.StateMachine
                         }
                         else if (nextState == (int)ITransition.Transition.CantHappen)
                         {
+                            if (logger != null) logger.LogError("transition is 'cannot happen'");
                             throw new CantHappenTransitionException(this, currentState, nextEvent.EventNumber);
                         }
                     }
                     if (currentStateMachineState == StateMachineState.ToTerminate)
                     {
+                        if (logger != null) logger.LogInfo("state machine is stopping...");
                         break;
                     }
 
@@ -62,6 +65,7 @@ namespace Kae.StateMachine
 
         public override Task ReceivedEvent(EventData supplementalData)
         {
+            if (logger != null) logger.LogInfo($"pushing received event:{supplementalData.EventNumber}");
             Task t = new Task(() =>
             {
                 lock (receivedEvents)
@@ -81,6 +85,7 @@ namespace Kae.StateMachine
                  {
                      currentStateMachineState = StateMachineState.ToTerminate;
                      Monitor.PulseAll(receivedEvents);
+                     if (logger != null) logger.LogInfo("state machine has been terminated");
                  }
              });
             return t;
