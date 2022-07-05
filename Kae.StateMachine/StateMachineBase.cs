@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kae.Utility.Logging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace Kae.StateMachine
         protected IList<EventData> receivedEvents;
         protected Thread runningThread;
 
-        public StateMachineBase(int initialState) : base(initialState)
+        public StateMachineBase(int initialState, Logger logger = null) : base(initialState, logger)
         {
             receivedEvents = new List<EventData>();
             runningThread = new Thread(StateMachineExecution);
