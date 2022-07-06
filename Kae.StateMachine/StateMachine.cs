@@ -35,5 +35,15 @@ namespace Kae.StateMachine
         protected StateMachineState currentStateMachineState;
         protected object currentStateMachineStateLock = new object();
         public StateMachineState CurrentStateMachineState { get { lock (currentStateMachineStateLock) { return currentStateMachineState; } } }
+
+        public void ForceUpdateState(int stateNumber)
+        {
+            lock (currentStateMachineStateLock)
+            {
+                int nowState = this.currentState;
+                this.currentState |= stateNumber;
+                if (logger != null) logger.LogWarning($"State is updated force from {nowState} to {stateNumber}");
+            }
+        }
     }
 }
