@@ -1,4 +1,6 @@
-﻿using Kae.StateMachine;
+﻿// Copyright (c) Knowledge & Experience. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using Kae.StateMachine;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -85,6 +87,7 @@ namespace StateMachineSample
         public ActiveObjectStateMachine(ActiveObject target) : base((int)State.Ready)
         {
             this.target = target;
+            this.stateTransition = this;
         }
 
         protected override void RunEntryAction(int nextState, EventData eventData)

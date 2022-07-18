@@ -1,4 +1,6 @@
-﻿using Kae.Utility.Logging;
+﻿// Copyright (c) Knowledge & Experience. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using Kae.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace Kae.StateMachine
         protected Logger logger;
 
         public abstract Task ReceivedEvent(EventData supplementalData);
+        public abstract Task ReceivedSelfEvent(EventData supplementalData);
         public abstract Task Delete();
 
         public StateMachine(int initialState, Logger logger = null)

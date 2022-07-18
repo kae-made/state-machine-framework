@@ -1,6 +1,9 @@
-﻿using Kae.Utility.Logging;
+﻿// Copyright (c) Knowledge & Experience. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using Kae.Utility.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,12 +30,15 @@ namespace Kae.StateMachine
             {
                 lock (receivedEvents)
                 {
-                    while (receivedEvents.Count <= 0)
+                    var firedReceivedEvents = receivedEvents.Where(e => e.FireTiming < DateTime.Now);
+                    while (firedReceivedEvents.Count() <= 0)
                         Monitor.Wait(receivedEvents);
-                    if (receivedEvents.Count > 0)
+                    firedReceivedEvents = receivedEvents.Where(e => e.FireTiming < DateTime.Now);
+                    if (firedReceivedEvents.Count() > 0)
                     {
-                        var nextEvent = receivedEvents[0];
-                        receivedEvents.RemoveAt(0);
+                        var nextEvent = firedReceivedEvents.ElementAt(0);
+
+                        receivedEvents.Remove(nextEvent);
                         Monitor.PulseAll(receivedEvents);
                         lock (currentStateMachineStateLock)
                         {
@@ -78,6 +84,20 @@ namespace Kae.StateMachine
             return t; 
         }
 
+        public override Task ReceivedSelfEvent(EventData supplementalData)
+        {
+            if (logger != null) logger.LogInfo($"pushing received self event:{supplementalData.EventNumber}");
+            Task t = new Task(() =>
+            {
+                lock (receivedEvents)
+                {
+                    receivedEvents.Insert(0, supplementalData);
+                    Monitor.PulseAll(receivedEvents);
+                }
+            });
+            return t;
+        }
+
         public override Task Delete()
         {
             Task t = new Task(() =>
@@ -88,6 +108,8 @@ namespace Kae.StateMachine
                      Monitor.PulseAll(receivedEvents);
                      if (logger != null) logger.LogInfo("state machine has been terminated");
                  }
+                 runningThread.Join();
+                 
              });
             return t;
         }
