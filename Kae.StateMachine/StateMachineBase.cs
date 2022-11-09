@@ -10,15 +10,30 @@ using System.Threading.Tasks;
 
 namespace Kae.StateMachine
 {
+    // When synchronousMode is true, timer event is not supported. please implement timer event mechanism by other way.
     public abstract class StateMachineBase : StateMachine
     {
         protected IList<EventData> receivedEvents;
         protected Thread runningThread;
+        protected bool synchronousMode;
 
-        public StateMachineBase(int initialState, Logger logger = null) : base(initialState, logger)
+        public StateMachineBase(int initialState, bool synchronousMode, Logger logger = null) : base(initialState, logger)
         {
             receivedEvents = new List<EventData>();
-            runningThread = new Thread(StateMachineExecution);
+            this.synchronousMode = synchronousMode;
+            if (this.synchronousMode)
+            {
+                logger.LogInfo("timer event is not supported. please implement timer event mechanism by other way.");
+            }
+            else
+            {
+                runningThread = new Thread(StateMachineExecution);
+            }
+        }
+
+        public StateMachineBase(int initialState,  Logger logger = null) : this(initialState, synchronousMode:false, logger)
+        {
+            logger.LogInfo("Run on asynchronous mode by using owned thread.");
         }
 
         protected abstract void RunEntryAction(int nextState, EventData eventData);
@@ -72,6 +87,18 @@ namespace Kae.StateMachine
 
         public override Task ReceivedEvent(EventData supplementalData)
         {
+            if (synchronousMode)
+            {
+                var nextEvent = supplementalData;
+                RunNextStateSyncronously(nextEvent);
+                while (receivedEvents.Count > 0)
+                {
+                    nextEvent = receivedEvents.ElementAt(0);
+                    receivedEvents.RemoveAt(0);
+                    RunNextStateSyncronously(nextEvent);
+                }
+                return Task.CompletedTask;
+            }
             if (logger != null) logger.LogInfo($"pushing received event:{supplementalData.EventNumber}");
             Task t = new Task(() =>
             {
@@ -84,8 +111,30 @@ namespace Kae.StateMachine
             return t; 
         }
 
+        private void RunNextStateSyncronously(EventData nextEvent)
+        {
+            int nextState = (int)stateTransition.GetNextState(currentState, nextEvent.EventNumber);
+            currentStateMachineState = StateMachineState.Intermidiate;
+            if (nextState >= 0)
+            {
+                RunEntryAction(nextState, nextEvent);
+                currentState = nextState;
+                currentStateMachineState = StateMachineState.Confirmed;
+            }
+            else if (nextState == (int)ITransition.Transition.CantHappen)
+            {
+                if (logger != null) logger.LogError("transition is 'cannot happen'");
+                throw new CantHappenTransitionException(this, currentState, nextEvent.EventNumber);
+            }
+        }
+
         public override Task ReceivedSelfEvent(EventData supplementalData)
         {
+            if (synchronousMode)
+            {
+                receivedEvents.Add(supplementalData);
+                return Task.CompletedTask;
+            }
             if (logger != null) logger.LogInfo($"pushing received self event:{supplementalData.EventNumber}");
             Task t = new Task(() =>
             {

@@ -9,7 +9,9 @@ namespace Kae.StateMachine
     public abstract class EventData
     {
         protected int eventNumber;
+        protected string eventName;
         public int EventNumber { get { return eventNumber; } }
+        public string EventName { get { return eventName; } }
 
         public EventData(int eventNumber)
         {
@@ -23,7 +25,18 @@ namespace Kae.StateMachine
             this.fireTiming = fireTiming;
         }
 
+        public EventData(string eventName, int eventNumber)
+        {
+            this.eventName = eventName;
+            this.eventNumber = eventNumber;
+            this.fireTiming = DateTime.Now;
+        }
+
         protected DateTime fireTiming;
         public DateTime FireTiming { get; }
+
+        public abstract void Send();
+
+        public abstract IDictionary<string, object> GetSupplementalData();
     }
 }
