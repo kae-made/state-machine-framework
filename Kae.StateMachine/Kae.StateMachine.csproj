@@ -2,17 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Authors>Hiroshi Ota</Authors>
     <Company>Knowledge &amp; Experience</Company>
     <PackageProjectUrl>https://github.com/kae-made/state-machine-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kae-made/state-machine-framework</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright (c) Knowledge &amp; Experience. All rights reserved.</Copyright>
+    <PackageIcon>kae-log-no-chart-128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kae.Utility.Logging" Version="1.0.0" />
+    <None Include="..\..\..\..\OneDrive\画像\kae-log-no-chart-128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kae.Utility.Logging" Version="1.3.0" />
   </ItemGroup>
 
 </Project>
