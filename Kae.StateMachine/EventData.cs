@@ -38,5 +38,7 @@ namespace Kae.StateMachine
         public abstract void Send();
 
         public abstract IDictionary<string, object> GetSupplementalData();
+
+        public abstract string GetReceiverIdentities();
     }
 }

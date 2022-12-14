@@ -47,6 +47,21 @@ namespace StateMachineSample
         {
 
         }
+
+        public override string GetReceiverIdentities()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDictionary<string, object> GetSupplementalData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Send()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class ActiveObjectEvent2 : EventData
@@ -56,6 +71,21 @@ namespace StateMachineSample
             this.Mode = mode;
         }
         public int Mode { get; set; }
+
+        public override string GetReceiverIdentities()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDictionary<string, object> GetSupplementalData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Send()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class ActiveObjectEvent3 : EventData
@@ -65,6 +95,21 @@ namespace StateMachineSample
             this.Level = level;
         }
         public int Level { get; set; }
+
+        public override string GetReceiverIdentities()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDictionary<string, object> GetSupplementalData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Send()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal partial class ActiveObjectStateMachine : StateMachineBase
